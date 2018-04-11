@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -42,8 +43,37 @@ public class Database {
      * @return Returns map of contact name and messages
      */
     public Map<String, List<Message>> sortMessagesByContact() {
+        List<String> contacts = new ArrayList<String>();
+        Map output = new HashMap();
 
-        return null;
+        for (Message message : getMessages()) {
+            Optional<String> contact = message.getContactName();
+            if (contact.isPresent() && !contacts.contains(contact.get())) {
+                contacts.add(contact.get());
+            }
+        }
+
+        for (String contactName : contacts) {
+
+            List<Message> temp = new ArrayList<Message>();
+
+            for (Message m : filter(new CheckContact() {
+                @Override
+                public Predicate<Message> hasContact() {
+                    return m -> m.getContactName().isPresent();
+                }
+            }
+                .hasContact())) {
+                if (m.getContactName().isPresent()) {
+                    if (m.getContactName().get().equals(contactName)) {
+                        temp.add(m);
+                    }
+                }
+            }
+            output.put(contactName, temp);
+        }
+
+        return output;
     }
 
     /**
@@ -69,16 +99,25 @@ public class Database {
         return outputList;
     }
 
-    // public class keywordSearch implements Predicate {
-    //     public boolean test (Message m, String keyword) {
-    //         return m.getBody().toLowerCase().contains(keyword.toLowerCase());
-    //     }
-    // }
-    //
-
-
     /**
      * Inner class for keyword search
+     */
+
+    /**
+     * Scafolding for checkContact
+     */
+    public class CheckContact {
+        /**
+         * Has contact scafold
+         * @return null
+         */
+        public Predicate<Message> hasContact() {
+            return null;
+        }
+    }
+
+    /**
+     * Inner Keyword class
      */
     public static class KeywordClass {
 
@@ -115,8 +154,8 @@ public class Database {
         LocalDateTime end) {
 
         Predicate<Message> datesearch = mess -> (
-            (mess.getDate().isAfter(start) && mess.getDate().isBefore(end)) ||
-            (mess.getDate().equals(start) || mess.getDate().equals(end)));
+            (mess.getDate().isAfter(start) && mess.getDate().isBefore(end))
+            || (mess.getDate().equals(start) || mess.getDate().equals(end)));
 
         return filter(datesearch);
     }
