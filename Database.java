@@ -37,6 +37,10 @@ public class Database {
         return filter(prioritySearch);
     }
 
+    /**
+     * Method to sort messages by contact
+     * @return Returns map of contact name and messages
+     */
     public Map<String, List<Message>> sortMessagesByContact() {
 
         return null;
@@ -65,17 +69,39 @@ public class Database {
         return outputList;
     }
 
+    // public class keywordSearch implements Predicate {
+    //     public boolean test (Message m, String keyword) {
+    //         return m.getBody().toLowerCase().contains(keyword.toLowerCase());
+    //     }
+    // }
+    //
+
+
+    /**
+     * Inner class for keyword search
+     */
+    public static class KeywordClass {
+
+        /**
+         * Function to look for keyword
+         * @param  keyword keyword to look for
+         * @return         true or false if keyword was there
+         */
+        public static Predicate<Message> hasKeyword(String keyword) {
+            return m -> m.getBody().toLowerCase().contains(
+                keyword.toLowerCase());
+        }
+    }
+
     /**
      * Gets message in DB with a specific keyword
      * @param  keyword keyword to search by
      * @return         messages with keyword
      */
     public List<Message> getMessagesWithKeyword(String keyword) {
-        List<Message> output = messages;
-        keyword = keyword.toLowerCase();
+        KeywordClass keySearch = new KeywordClass();
 
-
-        return output;
+        return filter(KeywordClass.hasKeyword(keyword));
 
     }
 
