@@ -28,6 +28,21 @@ public class Database {
     }
 
     /**
+     * Function to get messages in DB with Priority
+     * @return messages in DB with priority
+     */
+    public List<Message> getMessagesWithPriority() {
+        Predicate<Message> prioritySearch = (Message::getIsImportant);
+
+        return filter(prioritySearch);
+    }
+
+    public Map<String, List<Message>> sortMessagesByContact() {
+
+        return null;
+    }
+
+    /**
      * Getter for messages
      * @return returns messages in the db
      */
@@ -62,6 +77,22 @@ public class Database {
 
         return output;
 
+    }
+
+    /**
+     * Function to get messages between two dates
+     * @param  start Start date to search
+     * @param  end   End date to search
+     * @return       Sorted message list
+     */
+    public List<Message> getMessagesBetween(LocalDateTime start,
+        LocalDateTime end) {
+
+        Predicate<Message> datesearch = mess -> (
+            (mess.getDate().isAfter(start) && mess.getDate().isBefore(end)) ||
+            (mess.getDate().equals(start) || mess.getDate().equals(end)));
+
+        return filter(datesearch);
     }
 
     /**
